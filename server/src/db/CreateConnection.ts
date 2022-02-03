@@ -1,4 +1,6 @@
 import { Connection, createConnection } from 'typeorm';
+import { Category } from './entity/Category';
+import { Product } from './entity/Product';
 import { User } from './entity/User';
 
 export async function initializeConnection(): Promise<Connection> {
@@ -6,7 +8,7 @@ export async function initializeConnection(): Promise<Connection> {
     name: 'default',
     type: 'sqlite',
     database: 'test.sqlite',
-    entities: [User],
+    entities: [User, Category, Product],
     synchronize: true,
     logging: true,
   });
