@@ -1,13 +1,21 @@
-import { AddProduct } from '../../../../component/Admin/Product/AddProduct/AddProduct';
-import { Header } from '../../../../component/Header/Header';
+import '../../Admin.scss';
 
-import './style/AddProductPage.scss';
+import { AddProduct } from '../../../../component/Admin/Product/AddProduct/AddProduct';
+import { Sidebar } from '../../../../component/Admin/Sidebar/Sidebar';
+import { Header } from '../../../../component/Header/Header';
 
 export function AddProductPage() {
     return (
-        <div className="App">
+        <div className="app">
             <Header />
-            <AddProduct />
+            <div className="content">
+                <div className="left">
+                    <Sidebar />
+                </div>
+                <div className="right">
+                    <AddProduct />
+                </div>
+            </div >
         </div>
     );
 }

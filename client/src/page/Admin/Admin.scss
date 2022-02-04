@@ -1,0 +1,15 @@
+.app {
+    .content {
+        display: flex;
+        .left {
+            padding-top: 16px;
+            flex: 0 0 10%;
+            max-width: 10%;
+        }
+        .right {
+            padding-top: 16px;
+            flex: 0 0 90%;
+            max-width: 90%;
+        }
+    }
+}

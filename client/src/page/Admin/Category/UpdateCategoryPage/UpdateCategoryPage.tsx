@@ -1,13 +1,21 @@
-import { UpdateCategory } from '../../../../component/Admin/Category/UpdateCategory/UpdateCategory';
-import { Header } from '../../../../component/Header/Header';
+import '../../Admin.scss';
 
-import './style/UpdateCategoryPage.scss';
+import { UpdateCategory } from '../../../../component/Admin/Category/UpdateCategory/UpdateCategory';
+import { Sidebar } from '../../../../component/Admin/Sidebar/Sidebar';
+import { Header } from '../../../../component/Header/Header';
 
 export function UpdateCategoryPage() {
     return (
-        <div className="App">
+        <div className="app">
             <Header />
-            <UpdateCategory />
+            <div className="content">
+                <div className="left">
+                    <Sidebar />
+                </div>
+                <div className="right">
+                    <UpdateCategory />
+                </div>
+            </div >
         </div>
     );
 }

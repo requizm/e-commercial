@@ -1,13 +1,21 @@
-import { UpdateProduct } from '../../../../component/Admin/Product/UpdateProduct/UpdateProduct';
-import { Header } from '../../../../component/Header/Header';
+import '../../Admin.scss';
 
-import './style/UpdateProductPage.scss';
+import { UpdateProduct } from '../../../../component/Admin/Product/UpdateProduct/UpdateProduct';
+import { Sidebar } from '../../../../component/Admin/Sidebar/Sidebar';
+import { Header } from '../../../../component/Header/Header';
 
 export function UpdateProductPage() {
     return (
-        <div className="App">
+        <div className="app">
             <Header />
-            <UpdateProduct />
+            <div className="content">
+                <div className="left">
+                    <Sidebar />
+                </div>
+                <div className="right">
+                    <UpdateProduct />
+                </div>
+            </div >
         </div>
     );
 }

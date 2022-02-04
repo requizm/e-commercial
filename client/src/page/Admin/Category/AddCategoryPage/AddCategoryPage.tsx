@@ -1,13 +1,21 @@
-import { AddCategory } from '../../../../component/Admin/Category/AddCategory/AddCategory';
-import { Header } from '../../../../component/Header/Header';
+import '../../Admin.scss';
 
-import './style/AddCategoryPage.scss';
+import { AddCategory } from '../../../../component/Admin/Category/AddCategory/AddCategory';
+import { Sidebar } from '../../../../component/Admin/Sidebar/Sidebar';
+import { Header } from '../../../../component/Header/Header';
 
 export function AddCategoryPage() {
     return (
-        <div className="App">
+        <div className="app">
             <Header />
-            <AddCategory />
+            <div className="content">
+                <div className="left">
+                    <Sidebar />
+                </div>
+                <div className="right">
+                    <AddCategory />
+                </div>
+            </div >
         </div>
     );
 }

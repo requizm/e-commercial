@@ -1,0 +1,11 @@
+.sidebar {
+    .list {
+        list-style: none;
+        .list-item {
+            padding: 8px 16px;
+            &:hover {
+                background-color: #41c56dc7;
+            }
+        }
+    }
+}

@@ -1,13 +1,21 @@
-import { CategoryList } from '../../../../component/Admin/Category/CategoryList/CategoryList';
-import { Header } from '../../../../component/Header/Header';
+import '../../Admin.scss';
 
-import './style/CategoryListPage.scss';
+import { CategoryList } from '../../../../component/Admin/Category/CategoryList/CategoryList';
+import { Sidebar } from '../../../../component/Admin/Sidebar/Sidebar';
+import { Header } from '../../../../component/Header/Header';
 
 export function CategoryListPage() {
     return (
-        <div className="App">
+        <div className="app">
             <Header />
-            <CategoryList />
+            <div className="content">
+                <div className="left">
+                    <Sidebar />
+                </div>
+                <div className="right">
+                    <CategoryList />
+                </div>
+            </div >
         </div>
     );
 }
