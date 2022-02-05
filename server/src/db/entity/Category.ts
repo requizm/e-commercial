@@ -2,7 +2,7 @@ import {
     Column,
     Entity,
     JoinColumn,
-    OneToOne,
+    ManyToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
 
@@ -14,7 +14,7 @@ export class Category {
     @Column()
     name: string;
 
-    @OneToOne(() => Category, { nullable: true })
+    @ManyToOne(() => Category, { nullable: true })
     @JoinColumn()
     parent: Category;
 

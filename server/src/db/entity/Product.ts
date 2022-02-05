@@ -2,7 +2,7 @@ import {
     Column,
     Entity,
     JoinColumn,
-    OneToOne,
+    ManyToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
 
@@ -25,7 +25,7 @@ export class Product {
     @Column()
     image: string;
 
-    @OneToOne(() => Category)
+    @ManyToOne(() => Category)
     @JoinColumn()
     category: Category;
 
