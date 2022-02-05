@@ -115,7 +115,7 @@ export function UpdateProduct() {
             </div>
             <div className="product-form-bottom">
                 <div className="update-button-block">
-                    <input type="submit" id="update-button" disabled={true} className="btn disable-btn update-button" value="Update" />
+                    <input type="submit" id="update-button" disabled={true} className="btn active-btn update-button" value="Update" />
                 </div>
             </div>
         </form>
