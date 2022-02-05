@@ -6,10 +6,10 @@ import { useParams } from "react-router-dom";
 import { Get, Put } from "../../../../util/ApiCall";
 import { isNullOrEmpty } from "../../../../util/StringUtils";
 
-export class Category {
-    id!: number;
-    name!: string;
-    parent: Category | undefined;
+export interface Category {
+    id: number;
+    name: string;
+    parent: number;
 }
 
 const defaultFields = {
@@ -65,9 +65,7 @@ export function UpdateProduct() {
             description: fields.description,
             price: fields.price,
             image: fields.image,
-            category: {
-                id: fields.category,
-            },
+            category: fields.category,
         };
         const response = await Put(JSON.stringify(data), "product/update");
         if (response.ok) {

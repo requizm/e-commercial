@@ -5,15 +5,15 @@ import { FormEvent, useEffect, useState } from "react";
 import { Get, Post } from "../../../../util/ApiCall";
 import { isNullOrEmpty } from "../../../../util/StringUtils";
 
-export class Category {
-    id: number | undefined;
-    name: string | undefined;
-    parent: Category | undefined;
+export interface Category {
+    id: number;
+    name: string;
+    parent: number;
 }
 
 export function AddCategory() {
     const [name, setName] = useState("");
-    const [parent, setParent] = useState({});
+    const [parent, setParent] = useState(-1);
     const [formSubmit, setFormSubmit] = useState("");
     const [categories, setCategories] = useState([]);
 
@@ -42,7 +42,7 @@ export function AddCategory() {
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        const data = { name: name, parent: parent };
+        const data = { name: name, parent: parent === -1 ? null : parent };
         const response = await Post(JSON.stringify(data), "category/add");
         if (response.ok) {
             updateCategoryList();
@@ -82,9 +82,9 @@ export function AddCategory() {
                             name="parent"
                             className="text-input parent-select"
                             autoComplete="off"
-                            onChange={(e) => setParent(e.target.value)}
+                            onChange={(e) => setParent(Number(e.target.value))}
                         >
-                            <option>None</option>
+                            <option value="-1">Null</option>
                             {categories.map((category: Category) => {
                                 return (
                                     <option value={category.id}>

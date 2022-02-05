@@ -6,17 +6,17 @@ import { useParams } from "react-router-dom";
 import { Get, Put } from "../../../../util/ApiCall";
 import { isNullOrEmpty } from "../../../../util/StringUtils";
 
-export class Category {
-    id!: number;
-    name!: string;
-    parent: Category | undefined;
+export interface Category {
+    id: number;
+    name: string;
+    parent: Category;
 }
 
 export function UpdateCategory() {
     let params = useParams();
     const id = Number(params.id);
     const [name, setName] = useState("");
-    const [parent, setParent] = useState(new Category());
+    const [parent, setParent] = useState(-1);
     const [formSubmit, setFormSubmit] = useState("");
     const [categories, setCategories] = useState([]);
 
@@ -47,7 +47,11 @@ export function UpdateCategory() {
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        const data = { id: id, name: name, parent: parent };
+        const data = {
+            id: id,
+            name: name,
+            parent: parent !== -1 ? parent : null,
+        };
         const response = await Put(JSON.stringify(data), "category/update");
         if (response.ok) {
             updateCategoryList();
@@ -66,9 +70,9 @@ export function UpdateCategory() {
         const category: Category = result.data.find(
             (c: { id: number }) => c.id === id
         );
-        setName(category?.name);
-        if (category?.parent) {
-            setParent(category?.parent);
+        setName(category.name);
+        if (category.parent) {
+            setParent(category.parent.id);
         }
     }
 
@@ -96,14 +100,10 @@ export function UpdateCategory() {
                             name="parent"
                             className="text-input parent-select"
                             autoComplete="off"
-                            value={parent.id}
-                            onChange={(e) => {
-                                let category: Category = new Category();
-                                category.id = Number(e.target.value);
-                                setParent(category);
-                            }}
+                            value={parent}
+                            onChange={(e) => setParent(Number(e.target.value))}
                         >
-                            <option value="">None</option>
+                            <option value="-1">Null</option>
                             {categories.map((category: Category) => {
                                 return (
                                     <option value={category.id}>

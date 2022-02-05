@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 
 import { Get, Post } from "../../../../util/ApiCall";
 
-export class Category {
-    id!: number;
-    name: string | undefined;
-    parent: Category | undefined;
+export interface Category {
+    id: number;
+    name: string ;
+    parent: Category;
 }
 
 export function CategoryList() {
