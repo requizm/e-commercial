@@ -35,7 +35,7 @@ export function AddCategory() {
     }, [name])
 
     function validateForm(): boolean {
-        return !isNullOrEmpty(name);
+        return isNullOrEmpty(name);
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -84,7 +84,7 @@ export function AddCategory() {
             </div>
             <div className="category-form-bottom">
                 <div className="add-button-block">
-                    <input type="submit" className="btn active-btn add-button" value="Add" />
+                    <input type="submit" id="add-button" className="btn active-btn add-button" value="Add" />
                 </div>
             </div>
         </form>
