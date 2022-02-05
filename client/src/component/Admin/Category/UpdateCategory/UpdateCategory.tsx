@@ -24,21 +24,21 @@ export function UpdateCategory() {
     }, [])
 
     useEffect(() => {
-        let object = document.getElementById('add-button');
+        let object = document.getElementById('update-button');
         if (validateForm()) {
-            document.getElementById("add-button")?.setAttribute("disabled", "disabled");
+            document.getElementById("update-button")?.setAttribute("disabled", "disabled");
             object?.classList.remove("active-btn");
             object?.classList.add("disable-btn");
         }
         else {
-            document.getElementById("add-button")?.removeAttribute("disabled");
+            document.getElementById("update-button")?.removeAttribute("disabled");
             object?.classList.remove("disable-btn");
             object?.classList.add("active-btn");
         }
     }, [name])
 
     function validateForm(): boolean {
-        return !isNullOrEmpty(name);
+        return isNullOrEmpty(name);
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -97,8 +97,8 @@ export function UpdateCategory() {
                 </div>
             </div>
             <div className="category-form-bottom">
-                <div className="add-button-block">
-                    <input type="submit" className="btn active-btn update-button" value="Update" />
+                <div className="update-button-block">
+                    <input type="submit" id="update-button" className="btn active-btn update-button" value="Update" />
                 </div>
             </div>
         </form>
