@@ -53,18 +53,17 @@ export function UpdateCategory() {
             updateCategoryList();
             setFormSubmit("Güncellendi!");
         } else {
-            const responseText = await response.text();
-            setFormSubmit(responseText);
+            const result = await response.json();
+            setFormSubmit(result.message);
         }
     }
 
     async function updateCategoryList() {
         const response = await Get("category/getall");
-        const categories = await response.json();
-        if (categories) {
-            setCategories(categories);
-        }
-        const category: Category = categories.find(
+        const result = await response.json();
+        setCategories(result.data);
+
+        const category: Category = result.data.find(
             (c: { id: number }) => c.id === id
         );
         setName(category?.name);

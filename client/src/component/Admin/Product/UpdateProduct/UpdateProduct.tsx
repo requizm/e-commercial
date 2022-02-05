@@ -73,26 +73,25 @@ export function UpdateProduct() {
         if (response.ok) {
             setFormSubmit("Güncellendi!");
         } else {
-            const responseText = await response.text();
-            setFormSubmit(responseText);
+            const result = await response.json();
+            setFormSubmit(result.message);
         }
     }
 
     async function updateCategoryList() {
         const categoryResponse = await Get("category/getall");
-        const categories = await categoryResponse.json();
-        if (categories) {
-            setCategories(categories);
-        }
+        const categoryResult = await categoryResponse.json();
+        setCategories(categoryResult.data);
+
         const productResponse = await Get(`product/get/${id}`);
-        const product = await productResponse.json();
+        const productResult = await productResponse.json();
         setFields((prevState) => ({
             ...prevState,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            image: product.image,
-            category: product.category.id,
+            name: productResult.data.name,
+            description: productResult.data.description,
+            price: productResult.data.price,
+            image: productResult.data.image,
+            category: productResult.data.category.id,
         }));
     }
 

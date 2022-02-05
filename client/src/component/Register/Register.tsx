@@ -88,11 +88,10 @@ export function Register() {
             const response = await Post(JSON.stringify(data), "auth/register");
             if (response.ok) {
                 navigate("../login");
+            } else {
+                const result = await response.json();
+                setFormSubmit(result.message);
             }
-            const responseText = await response.text();
-            setFormSubmit(responseText);
-        } else {
-            setFormSubmit("");
         }
     }
     return (

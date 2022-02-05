@@ -26,8 +26,8 @@ export function ProductList() {
 
     async function updateProductList() {
         const response = await Get("product/getall");
-        const products = await response.json();
-        setProducts(products);
+        const result = await response.json();
+        setProducts(result.data);
     }
 
     useEffect(() => {
@@ -40,8 +40,8 @@ export function ProductList() {
             updateProductList();
             setFormSubmit("");
         } else {
-            const responseText = await response.text();
-            setFormSubmit(responseText);
+            const result = await response.json();
+            setFormSubmit(result.message);
         }
     }
 

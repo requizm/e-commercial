@@ -48,15 +48,15 @@ export function AddCategory() {
             updateCategoryList();
             setFormSubmit("Eklendi!");
         } else {
-            const responseText = await response.text();
-            setFormSubmit(responseText);
+            const result = await response.json();
+            setFormSubmit(result.message);
         }
     }
 
     async function updateCategoryList() {
         const response = await Get("category/getall");
-        const categories = await response.json();
-        setCategories(categories);
+        const result = await response.json();
+        setCategories(result.data);
     }
 
     return (

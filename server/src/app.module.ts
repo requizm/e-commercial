@@ -17,6 +17,23 @@ import { ProductService } from "./service/ProductService";
         CategoryController,
         ProductController,
     ],
-    providers: [AppService, AuthService, CategoryService, ProductService],
+    providers: [
+        AppService,
+        AuthService,
+        {
+            provide: "connectionName",
+            useValue: "default",
+        },
+        CategoryService,
+        {
+            provide: "connectionName",
+            useValue: "default",
+        },
+        ProductService,
+        {
+            provide: "connectionName",
+            useValue: "default",
+        },
+    ],
 })
 export class AppModule {}
