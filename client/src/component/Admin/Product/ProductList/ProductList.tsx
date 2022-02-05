@@ -5,19 +5,19 @@ import { Link } from "react-router-dom";
 
 import { Get, Post } from "../../../../util/ApiCall";
 
-export class Category {
-    id: number | undefined;
-    name: string | undefined;
-    parent: Category | undefined;
+export interface Category {
+    id: number;
+    name: string;
+    parent: Category;
 }
 
-export class Product {
-    id!: number;
-    name: string | undefined;
-    description: string | undefined;
-    price: number | undefined;
-    image: string | undefined;
-    category!: Category;
+export interface Product {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    category: Category;
 }
 
 export function ProductList() {
@@ -26,8 +26,8 @@ export function ProductList() {
 
     async function updateProductList() {
         const response = await Get("product/getall");
-        const products = await response.json();
-        setProducts(products);
+        const result = await response.json();
+        setProducts(result.data);
     }
 
     useEffect(() => {
@@ -40,8 +40,8 @@ export function ProductList() {
             updateProductList();
             setFormSubmit("");
         } else {
-            const responseText = await response.text();
-            setFormSubmit(responseText);
+            const result = await response.json();
+            setFormSubmit(result.message);
         }
     }
 

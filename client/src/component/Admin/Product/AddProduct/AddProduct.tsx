@@ -5,10 +5,10 @@ import { FormEvent, useEffect, useState } from "react";
 import { Get, Post } from "../../../../util/ApiCall";
 import { isNullOrEmpty } from "../../../../util/StringUtils";
 
-export class Category {
-    id: number | undefined;
-    name: string | undefined;
-    parent: Category | undefined;
+export interface Category {
+    id: number;
+    name: string;
+    parent: number;
 }
 
 const defaultFields = {
@@ -59,16 +59,14 @@ export function AddProduct() {
             description: fields.description,
             price: fields.price,
             image: fields.image,
-            category: {
-                id: fields.category,
-            },
+            category: fields.category,
         };
         const response = await Post(JSON.stringify(data), "product/add");
         if (response.ok) {
             setFormSubmit("Eklendi!");
         } else {
-            const responseText = await response.text();
-            setFormSubmit(responseText);
+            const result = await response.json();
+            setFormSubmit(result.message);
         }
     }
 
@@ -84,8 +82,8 @@ export function AddProduct() {
 
     async function updateCategoryList() {
         const response = await Get("category/getall");
-        const categories = await response.json();
-        setCategories(categories);
+        const result = await response.json();
+        setCategories(result.data);
     }
 
     return (

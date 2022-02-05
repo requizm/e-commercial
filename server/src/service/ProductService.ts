@@ -1,45 +1,59 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Product } from "src/db/entity/Product";
 import { ProductRepository } from "src/db/repository/ProductRepository";
+import { Result } from "src/dto/Result";
 import { getConnection } from "typeorm";
 
 @Injectable()
 export class ProductService {
     productRepository: ProductRepository;
-    constructor() {
-        const connection = getConnection("default");
+    constructor(@Inject("connectionName") private connectionName: string) {
+        const connection = getConnection(this.connectionName);
         this.productRepository = connection.getCustomRepository(
             ProductRepository
         );
     }
 
-    async getAll(): Promise<Product[]> {
-        return await this.productRepository.getAll();
+    async getAll(): Promise<Result> {
+        let result = new Result();
+        result.data = await this.productRepository.getAll();
+        return result;
     }
 
-    async getById(id: number): Promise<Product> {
-        return await this.productRepository.getById(id);
+    async getById(id: number): Promise<Result> {
+        let result = new Result();
+        result.data = await this.productRepository.getById(id);
+        if (!result.data) {
+            result.message = "Product not found";
+        }
+        return result;
     }
 
-    async add(product: Product): Promise<Product> {
-        return await this.productRepository.save(product);
+    async add(product: Product): Promise<Result> {
+        let result = new Result();
+        result.data = await this.productRepository.save(product);
+        return result;
     }
 
-    async update(product: Product): Promise<string> {
+    async update(product: Product): Promise<Result> {
+        let result = new Result();
         const productTemp = await this.productRepository.getById(product.id);
         if (!productTemp) {
-            return "Product not found";
+            result.message = "Product not found";
+        } else {
+            await this.productRepository.update(product.id, product);
         }
-        await this.productRepository.update(product.id, product);
-        return "";
+        return result;
     }
 
-    async delete(id: number): Promise<string> {
+    async delete(id: number): Promise<Result> {
+        let result = new Result();
         const product = await this.productRepository.getById(id);
         if (!product) {
-            return "Product not found";
+            result.message = "Product not found";
+        } else {
+            await this.productRepository.delete(id);
         }
-        await this.productRepository.delete(id);
-        return "";
+        return result;
     }
 }

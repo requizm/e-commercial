@@ -10,24 +10,18 @@ export class AuthController {
     @Post("register")
     async register(@Req() request: Request, @Res() res: Response) {
         const user = JSON.parse(JSON.stringify(request.body)) as User;
-        const status = await this.authService.register(user);
-        if (status) {
-            res.status(HttpStatus.OK).send();
-        } else {
-            res.status(HttpStatus.NOT_ACCEPTABLE).send("User already exists");
-        }
+        const result = await this.authService.register(user);
+        res.status(
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 
     @Post("login")
     async login(@Req() request: Request, @Res() res: Response) {
         const user = JSON.parse(JSON.stringify(request.body)) as User;
-        const status = await this.authService.login(user);
-        if (status) {
-            res.status(HttpStatus.OK).send();
-        } else {
-            res.status(HttpStatus.NOT_ACCEPTABLE).send(
-                "Wrong username or password"
-            );
-        }
+        const result = await this.authService.login(user);
+        res.status(
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 }

@@ -18,23 +18,23 @@ export class ProductController {
 
     @Get("getall")
     async getAll(@Req() request: Request, @Res() res: Response) {
-        const products = await this.productService.getAll();
-        return res.status(HttpStatus.OK).json(products);
+        const result = await this.productService.getAll();
+        return res.status(HttpStatus.OK).json(result);
     }
 
     @Get("get/:id")
     async get(@Req() request: Request, @Res() res: Response, @Param() params) {
-        const product = await this.productService.getById(params.id);
-        res.status(HttpStatus.OK).json(product);
+        const result = await this.productService.getById(params.id);
+        res.status(
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 
     @Post("add")
     async add(@Req() request: Request, @Res() res: Response) {
         const product = JSON.parse(JSON.stringify(request.body)) as Product;
         const result = await this.productService.add(product);
-        res.status(result ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE).json(
-            result ? result : "Product already exists"
-        );
+        res.status(HttpStatus.OK).json(result);
     }
 
     @Put("update")
@@ -42,8 +42,8 @@ export class ProductController {
         const product = JSON.parse(JSON.stringify(request.body)) as Product;
         const result = await this.productService.update(product);
         res.status(
-            result === "" ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE
-        ).send(result);
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 
     @Post("delete/:id")
@@ -54,7 +54,7 @@ export class ProductController {
     ) {
         const result = await this.productService.delete(params.id);
         res.status(
-            result === "" ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE
-        ).send(result);
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 }

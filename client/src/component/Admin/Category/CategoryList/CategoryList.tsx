@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 
 import { Get, Post } from "../../../../util/ApiCall";
 
-export class Category {
-    id!: number;
-    name: string | undefined;
-    parent: Category | undefined;
+export interface Category {
+    id: number;
+    name: string ;
+    parent: Category;
 }
 
 export function CategoryList() {
@@ -17,8 +17,8 @@ export function CategoryList() {
 
     async function updateCategoryList() {
         const response = await Get("category/getall");
-        const categories = await response.json();
-        setCategories(categories);
+        const result = await response.json();
+        setCategories(result.data);
     }
 
     useEffect(() => {
@@ -31,8 +31,8 @@ export function CategoryList() {
             updateCategoryList();
             setFormSubmit("");
         } else {
-            const responseText = await response.text();
-            setFormSubmit(responseText);
+            const result = await response.json();
+            setFormSubmit(result.message);
         }
     }
 

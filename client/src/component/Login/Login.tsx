@@ -43,11 +43,10 @@ export function Login() {
             const response = await Post(JSON.stringify(data), "auth/login");
             if (response.ok) {
                 navigate("../");
+            } else {
+                const result = await response.json();
+                setFormSubmit(result.message);
             }
-            const responseText = await response.text();
-            setFormSubmit(responseText);
-        } else {
-            setFormSubmit("");
         }
     }
     return (

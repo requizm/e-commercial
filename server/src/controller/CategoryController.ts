@@ -18,23 +18,25 @@ export class CategoryController {
 
     @Get("getall")
     async getAll(@Req() request: Request, @Res() res: Response) {
-        const categories = await this.categoryService.getAll();
-        res.status(HttpStatus.OK).json(categories);
+        const result = await this.categoryService.getAll();
+        res.status(HttpStatus.OK).json(result);
     }
 
     @Get("get/:id")
     async get(@Req() request: Request, @Res() res: Response, @Param() params) {
-        const category = await this.categoryService.getById(params.id);
-        res.status(HttpStatus.OK).json(category);
+        const result = await this.categoryService.getById(params.id);
+        res.status(
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 
     @Post("add")
     async add(@Req() request: Request, @Res() res: Response) {
         const category = JSON.parse(JSON.stringify(request.body)) as Category;
         const result = await this.categoryService.add(category);
-        res.status(result ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE).json(
-            result ? result : "Category already exists"
-        );
+        res.status(
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 
     @Put("update")
@@ -42,8 +44,8 @@ export class CategoryController {
         const category = JSON.parse(JSON.stringify(request.body)) as Category;
         const result = await this.categoryService.update(category);
         res.status(
-            result === "" ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE
-        ).send(result);
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 
     @Post("delete/:id")
@@ -54,7 +56,7 @@ export class CategoryController {
     ) {
         const result = await this.categoryService.delete(params.id);
         res.status(
-            result === "" ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE
-        ).send(result);
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 }
