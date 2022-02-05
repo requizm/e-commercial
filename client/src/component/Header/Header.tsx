@@ -1,5 +1,5 @@
-import './style/Header.scss';
+import "./style/Header.scss";
 
 export function Header() {
-    return (<div className="header"></div>)
+    return <div className="header"></div>;
 }

@@ -1,8 +1,8 @@
-import '../../Admin.scss';
+import "../../Admin.scss";
 
-import { UpdateProduct } from '../../../../component/Admin/Product/UpdateProduct/UpdateProduct';
-import { Sidebar } from '../../../../component/Admin/Sidebar/Sidebar';
-import { Header } from '../../../../component/Header/Header';
+import { UpdateProduct } from "../../../../component/Admin/Product/UpdateProduct/UpdateProduct";
+import { Sidebar } from "../../../../component/Admin/Sidebar/Sidebar";
+import { Header } from "../../../../component/Header/Header";
 
 export function UpdateProductPage() {
     return (
@@ -15,7 +15,7 @@ export function UpdateProductPage() {
                 <div className="right">
                     <UpdateProduct />
                 </div>
-            </div >
+            </div>
         </div>
     );
 }

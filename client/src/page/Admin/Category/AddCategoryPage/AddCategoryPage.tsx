@@ -1,8 +1,8 @@
-import '../../Admin.scss';
+import "../../Admin.scss";
 
-import { AddCategory } from '../../../../component/Admin/Category/AddCategory/AddCategory';
-import { Sidebar } from '../../../../component/Admin/Sidebar/Sidebar';
-import { Header } from '../../../../component/Header/Header';
+import { AddCategory } from "../../../../component/Admin/Category/AddCategory/AddCategory";
+import { Sidebar } from "../../../../component/Admin/Sidebar/Sidebar";
+import { Header } from "../../../../component/Header/Header";
 
 export function AddCategoryPage() {
     return (
@@ -15,7 +15,7 @@ export function AddCategoryPage() {
                 <div className="right">
                     <AddCategory />
                 </div>
-            </div >
+            </div>
         </div>
     );
 }
