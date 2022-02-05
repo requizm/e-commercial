@@ -1,44 +1,45 @@
 import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Category } from './Category';
+    Column,
+    Entity,
+    JoinColumn,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from "typeorm";
+
+import { Category } from "./Category";
 
 @Entity()
 export class Product {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  name: string;
+    @Column()
+    name: string;
 
-  @Column()
-  description: string;
+    @Column()
+    description: string;
 
-  @Column()
-  price: number;
+    @Column()
+    price: number;
 
-  @Column()
-  image: string;
+    @Column()
+    image: string;
 
-  @OneToOne(() => Category)
-  @JoinColumn()
-  category: Category;
+    @OneToOne(() => Category)
+    @JoinColumn()
+    category: Category;
 
-  constructor(
-    name: string,
-    description: string,
-    price: number,
-    image: string,
-    category: Category,
-  ) {
-    this.name = name;
-    this.description = description;
-    this.price = price;
-    this.image = image;
-    this.category = category;
-  }
+    constructor(
+        name: string,
+        description: string,
+        price: number,
+        image: string,
+        category: Category
+    ) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.image = image;
+        this.category = category;
+    }
 }

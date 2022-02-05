@@ -1,8 +1,8 @@
-import '../../Admin.scss';
+import "../../Admin.scss";
 
-import { UpdateCategory } from '../../../../component/Admin/Category/UpdateCategory/UpdateCategory';
-import { Sidebar } from '../../../../component/Admin/Sidebar/Sidebar';
-import { Header } from '../../../../component/Header/Header';
+import { UpdateCategory } from "../../../../component/Admin/Category/UpdateCategory/UpdateCategory";
+import { Sidebar } from "../../../../component/Admin/Sidebar/Sidebar";
+import { Header } from "../../../../component/Header/Header";
 
 export function UpdateCategoryPage() {
     return (
@@ -15,7 +15,7 @@ export function UpdateCategoryPage() {
                 <div className="right">
                     <UpdateCategory />
                 </div>
-            </div >
+            </div>
         </div>
     );
 }
