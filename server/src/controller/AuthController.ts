@@ -9,7 +9,7 @@ export class AuthController {
 
     @Post("register")
     async register(@Req() request: Request, @Res() res: Response) {
-        const user = JSON.parse(JSON.stringify(request.body)) as UserDto;
+        const user = new UserDto(JSON.parse(JSON.stringify(request.body)) as UserDto);
         const result = await this.authService.register(user);
         res.status(
             result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
@@ -18,7 +18,7 @@ export class AuthController {
 
     @Post("login")
     async login(@Req() request: Request, @Res() res: Response) {
-        const user = JSON.parse(JSON.stringify(request.body)) as UserDto;
+        const user = new UserDto(JSON.parse(JSON.stringify(request.body)) as UserDto);
         const result = await this.authService.login(user);
         res.status(
             result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK

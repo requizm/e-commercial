@@ -33,9 +33,9 @@ export class CategoryController {
 
     @Post("add")
     async add(@Req() request: Request, @Res() res: Response) {
-        const category = JSON.parse(
+        const category = new CategoryDto(JSON.parse(
             JSON.stringify(request.body),
-        ) as CategoryDto;
+        ) as CategoryDto);
         const result = await this.categoryService.add(category);
         res.status(
             result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
