@@ -8,6 +8,15 @@ import {
 
 import { Category } from "./Category";
 
+export interface IProduct {
+    id?: number;
+    name?: string;
+    description?: string;
+    price?: number;
+    image?: string;
+    category?: Category;
+}
+
 @Entity()
 export class Product {
     @PrimaryGeneratedColumn()
@@ -29,17 +38,11 @@ export class Product {
     @JoinColumn()
     category: Category;
 
-    constructor(
-        name: string,
-        description: string,
-        price: number,
-        image: string,
-        category: Category
-    ) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.image = image;
-        this.category = category;
+    constructor(product?: IProduct) {
+        this.name = product?.name;
+        this.description = product?.description;
+        this.price = product?.price;
+        this.image = product?.image;
+        this.category = product?.category;
     }
 }

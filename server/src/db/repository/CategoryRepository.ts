@@ -26,4 +26,12 @@ export class CategoryRepository extends Repository<Category> {
         });
         return children;
     }
+
+    async getRootChildren() {
+        const children = await this.find({
+            where: { parent: null },
+            relations: ["parent"],
+        });
+        return children;
+    }
 }

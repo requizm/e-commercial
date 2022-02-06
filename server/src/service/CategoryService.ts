@@ -1,8 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Category } from "src/db/entity/Category";
-import { CategoryRepository } from "src/db/repository/CategoryRepository";
-import { ProductRepository } from "src/db/repository/ProductRepository";
-import { Result } from "src/dto/Result";
+import { Category } from "../db/entity/Category";
+import { CategoryRepository } from "../db/repository/CategoryRepository";
+import { ProductRepository } from "../db/repository/ProductRepository";
+import { CategoryDto } from "../dto/CategoryDto";
+import { Result } from "../dto/Result";
 import { getConnection } from "typeorm";
 
 @Injectable()
@@ -35,21 +36,22 @@ export class CategoryService {
         return new Result({ data: data });
     }
 
-    async add(category: Category): Promise<Result> {
+    async add(categoryDto: CategoryDto): Promise<Result> {
+        const category = categoryDto.toCategory() as Category;
         if (!category.name) {
             return new Result({ message: "Missing fields" });
         }
+        let children: Category[] = [];
         if (category.parent) {
-            const children = await this.categoryRepository.getChildren(
-                category.parent
+            children = await this.categoryRepository.getChildren(
+                category.parent,
             );
-            children.find((child) => {
-                if (child.name === category.name) {
-                    return new Result({
-                        message: "Category with this name already exists",
-                    });
-                }
-            });
+        }
+        else {
+            children = await this.categoryRepository.getRootChildren();
+        }
+        if (children.filter(child => child.name === category.name).length > 0) {
+            return new Result({ message: "Category with this name already exists" });
         }
         const data = await this.categoryRepository.save(category);
         return new Result({ data: data });
@@ -62,6 +64,19 @@ export class CategoryService {
         const categoryTemp = await this.categoryRepository.getById(category.id);
         if (!categoryTemp) {
             return new Result({ message: "Category not found" });
+        }
+
+        let children: Category[] = [];
+        if (category.parent) {
+            children = await this.categoryRepository.getChildren(
+                category.parent,
+            );
+        }
+        else {
+            children = await this.categoryRepository.getRootChildren();
+        }
+        if (children.filter(child => child.name === category.name).length > 0) {
+            return new Result({ message: "Category with this name already exists" });
         }
         await this.categoryRepository.update(category.id, category);
         return new Result({});

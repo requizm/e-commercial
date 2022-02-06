@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { User } from "../db/entity/User";
 import { UserRepository } from "../db/repository/UserRepository";
 import { Result } from "../dto/Result";
+import { UserDto } from "../dto/UserDto";
 import { getConnection } from "typeorm";
 
 @Injectable()
@@ -12,7 +13,8 @@ export class AuthService {
         this.userRepository = connection.getCustomRepository(UserRepository);
     }
 
-    async register(user: User): Promise<Result> {
+    async register(userDto: UserDto): Promise<Result> {
+        const user = userDto.toUser() as User;
         if (
             !user.email ||
             !user.firstName ||
@@ -31,7 +33,8 @@ export class AuthService {
         return new Result({ data: data });
     }
 
-    async login(user: User): Promise<Result> {
+    async login(userDto: UserDto): Promise<Result> {
+        const user = userDto.toUser() as User;
         if (!user.email || !user.password) {
             return new Result({ message: "Missing fields" });
         }

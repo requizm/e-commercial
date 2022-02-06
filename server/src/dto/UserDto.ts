@@ -1,34 +1,29 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
-export interface IUser {
-    id?: number;
+export interface IUserDto {
     firstName?: string;
     lastName?: string;
     email?: string;
     password?: string;
 }
 
-@Entity()
-export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column()
+export class UserDto {
     firstName: string;
-
-    @Column()
     lastName: string;
-
-    @Column()
     email: string;
-
-    @Column()
     password: string;
 
-    constructor(user?: IUser) {
+    constructor(user?: IUserDto) {
         this.firstName = user?.firstName;
         this.lastName = user?.lastName;
         this.email = user?.email;
         this.password = user?.password;
+    }
+
+    toUser(): any {
+        return {
+            firstName: this.firstName,
+            lastName: this.lastName,
+            email: this.email,
+            password: this.password,
+        };
     }
 }

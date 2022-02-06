@@ -1,8 +1,10 @@
+/* eslint-disable prettier/prettier */
 /* src/user/user.service.spec.ts */
 import { Connection, Repository } from "typeorm";
 import { CreateMemDb } from "../db/CreateMemoryDb";
 import { AuthService } from "../service/AuthService";
 import { User } from "../DB/entity/User";
+import { UserDto } from "../dto/UserDto";
 
 describe("Auth Service", () => {
     let db: Connection;
@@ -17,7 +19,7 @@ describe("Auth Service", () => {
     afterEach(() => db.close());
 
     it("should create a new user", async () => {
-        const user = new User("obama", "jackson", "asd@asd.com", "123");
+        const user = new UserDto({ firstName: "obama", lastName: "jackson", email: "asd@asd.com", password: "123" });
 
         const result = await authService.register(user);
         const newUser = result.data;
@@ -28,7 +30,16 @@ describe("Auth Service", () => {
     });
 
     it("should create an existing user", async () => {
-        const user = new User("obama", "jackson", "asd@asd.com", "123");
+        const user = new UserDto({ firstName: "obama", lastName: "jackson", email: "asd@asd.com", password: "123" });
+        await authService.register(user);
+
+        const result = await authService.register(user);
+        const newUser = result.data;
+        expect(newUser).toBeUndefined();
+    });
+
+    it("should create an user with missing input", async () => {
+        const user = new UserDto({ firstName: "obama", lastName: "jackson" });
         await authService.register(user);
 
         const result = await authService.register(user);
@@ -37,7 +48,7 @@ describe("Auth Service", () => {
     });
 
     it("should login", async () => {
-        const user = new User("obama", "jackson", "asd@asd.com", "123");
+        const user = new UserDto({ firstName: "obama", lastName: "jackson", email: "asd@asd.com", password: "123" });
         await authService.register(user);
 
         const result = await authService.login(user);
@@ -46,7 +57,14 @@ describe("Auth Service", () => {
     });
 
     it("should not login", async () => {
-        const user = new User("obama", "jackson", "asd@asd.com", "123");
+        const user = new UserDto({ firstName: "obama", lastName: "jackson", email: "asd@asd.com", password: "123" });
+        const result = await authService.login(user);
+        const newUser = result.data;
+        expect(newUser).toBeUndefined();
+    });
+
+    it("should login with missing input", async () => {
+        const user = new UserDto({ firstName: "obama", lastName: "jackson", email: "asd@asd.com" });
         const result = await authService.login(user);
         const newUser = result.data;
         expect(newUser).toBeUndefined();
