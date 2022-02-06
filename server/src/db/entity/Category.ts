@@ -6,6 +6,11 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 
+export interface ICategory {
+    name?: string;
+    parent?: Category;
+}
+
 @Entity()
 export class Category {
     @PrimaryGeneratedColumn()
@@ -18,8 +23,8 @@ export class Category {
     @JoinColumn()
     parent: Category;
 
-    constructor(name: string, parent?: Category) {
-        this.name = name;
-        this.parent = parent;
+    constructor(category?: ICategory) {
+        this.name = category?.name;
+        this.parent = category?.parent;
     }
 }

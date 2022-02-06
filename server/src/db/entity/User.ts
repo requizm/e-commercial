@@ -1,5 +1,12 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
+export interface IUser {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+}
+
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
@@ -17,15 +24,10 @@ export class User {
     @Column()
     password: string;
 
-    constructor(
-        firstName: string,
-        lastName: string,
-        email: string,
-        password: string
-    ) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
+    constructor(user?: IUser) {
+        this.firstName = user?.firstName;
+        this.lastName = user?.lastName;
+        this.email = user?.email;
+        this.password = user?.password;
     }
 }
