@@ -9,9 +9,9 @@ import {
     Res,
 } from "@nestjs/common";
 import { Request, Response } from "express";
-import { Category } from "src/db/entity/Category";
-import { CategoryDto } from "src/dto/CategoryDto";
-import { CategoryService } from "src/service/CategoryService";
+import { Category } from "../db/entity/Category";
+import { CategoryDto } from "../dto/CategoryDto";
+import { CategoryService } from "../service/CategoryService";
 
 @Controller("category")
 export class CategoryController {
@@ -33,9 +33,9 @@ export class CategoryController {
 
     @Post("add")
     async add(@Req() request: Request, @Res() res: Response) {
-        const category = JSON.parse(
+        const category = new CategoryDto(JSON.parse(
             JSON.stringify(request.body),
-        ) as CategoryDto;
+        ) as CategoryDto);
         const result = await this.categoryService.add(category);
         res.status(
             result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK

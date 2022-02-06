@@ -9,9 +9,9 @@ import {
     Res,
 } from "@nestjs/common";
 import { Request, Response } from "express";
-import { Product } from "src/db/entity/Product";
-import { ProductDto } from "src/dto/ProductDto";
-import { ProductService } from "src/service/ProductService";
+import { Product } from "../db/entity/Product";
+import { ProductDto } from "../dto/ProductDto";
+import { ProductService } from "../service/ProductService";
 
 @Controller("product")
 export class ProductController {
@@ -33,7 +33,7 @@ export class ProductController {
 
     @Post("add")
     async add(@Req() request: Request, @Res() res: Response) {
-        const product = JSON.parse(JSON.stringify(request.body)) as ProductDto;
+        const product = new ProductDto(JSON.parse(JSON.stringify(request.body)) as ProductDto);
         const result = await this.productService.add(product);
         res.status(HttpStatus.OK).json(result);
     }
