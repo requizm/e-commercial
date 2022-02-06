@@ -25,6 +25,9 @@ export class CategoryService {
     }
 
     async getById(id: number): Promise<Result> {
+        if (!id) {
+            return new Result({ message: "Missing fields" });
+        }
         const data = await this.categoryRepository.getById(id);
         if (!data) {
             return new Result({ message: "Category not found" });
@@ -33,6 +36,9 @@ export class CategoryService {
     }
 
     async add(category: Category): Promise<Result> {
+        if (!category.name) {
+            return new Result({ message: "Missing fields" });
+        }
         if (category.parent) {
             const children = await this.categoryRepository.getChildren(
                 category.parent
@@ -50,6 +56,9 @@ export class CategoryService {
     }
 
     async update(category: Category): Promise<Result> {
+        if (!category.name || !category.id) {
+            return new Result({ message: "Missing fields" });
+        }
         const categoryTemp = await this.categoryRepository.getById(category.id);
         if (!categoryTemp) {
             return new Result({ message: "Category not found" });
@@ -59,6 +68,9 @@ export class CategoryService {
     }
 
     async delete(id: number): Promise<Result> {
+        if (!id) {
+            return new Result({ message: "Missing fields" });
+        }
         const category = await this.categoryRepository.getById(id);
         if (!category) {
             return new Result({ message: "Category not found" });

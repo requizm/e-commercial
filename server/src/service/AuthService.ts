@@ -13,6 +13,14 @@ export class AuthService {
     }
 
     async register(user: User): Promise<Result> {
+        if (
+            !user.email ||
+            !user.firstName ||
+            !user.lastName ||
+            !user.password
+        ) {
+            return new Result({ message: "Missing fields" });
+        }
         const availableUser = await this.userRepository.findOne({
             email: user.email,
         });
@@ -24,6 +32,9 @@ export class AuthService {
     }
 
     async login(user: User): Promise<Result> {
+        if (!user.email || !user.password) {
+            return new Result({ message: "Missing fields" });
+        }
         const data = await this.userRepository.findOne({
             email: user.email,
             password: user.password,
