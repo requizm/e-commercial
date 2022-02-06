@@ -65,6 +65,19 @@ export class CategoryService {
         if (!categoryTemp) {
             return new Result({ message: "Category not found" });
         }
+
+        let children: Category[] = [];
+        if (category.parent) {
+            children = await this.categoryRepository.getChildren(
+                category.parent,
+            );
+        }
+        else {
+            children = await this.categoryRepository.getRootChildren();
+        }
+        if (children.filter(child => child.name === category.name).length > 0) {
+            return new Result({ message: "Category with this name already exists" });
+        }
         await this.categoryRepository.update(category.id, category);
         return new Result({});
     }
