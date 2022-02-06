@@ -7,33 +7,41 @@ import { getConnection } from "typeorm";
 @Injectable()
 export class AuthService {
     userRepository: UserRepository;
-    constructor(@Inject('connectionName') private connectionName: string) {
+    constructor(@Inject("connectionName") private connectionName: string) {
         const connection = getConnection(this.connectionName);
         this.userRepository = connection.getCustomRepository(UserRepository);
     }
 
     async register(user: User): Promise<Result> {
-        let result: Result = new Result();
+        if (
+            !user.email ||
+            !user.firstName ||
+            !user.lastName ||
+            !user.password
+        ) {
+            return new Result({ message: "Missing fields" });
+        }
         const availableUser = await this.userRepository.findOne({
             email: user.email,
         });
         if (availableUser) {
-            result.message = "User already exists";
-        } else {
-            result.data = await this.userRepository.save(user);
+            return new Result({ message: "User already exists" });
         }
-        return result;
+        const data = await this.userRepository.save(user);
+        return new Result({ data: data });
     }
 
     async login(user: User): Promise<Result> {
-        let result: Result = new Result();
-        result.data = await this.userRepository.findOne({
+        if (!user.email || !user.password) {
+            return new Result({ message: "Missing fields" });
+        }
+        const data = await this.userRepository.findOne({
             email: user.email,
             password: user.password,
         });
-        if (!result.data) {
-            result.message = "Wrong username or password";
+        if (!data) {
+            return new Result({ message: "Wrong username or password" });
         }
-        return result;
+        return new Result({ data: data });
     }
 }

@@ -20,74 +20,76 @@ export class CategoryService {
     }
 
     async getAll(): Promise<Result> {
-        let result = new Result();
-        result.data = await this.categoryRepository.getAll();
-        return result;
+        const data = await this.categoryRepository.getAll();
+        return new Result({ data: data });
     }
 
     async getById(id: number): Promise<Result> {
-        let result = new Result();
-        result.data = await this.categoryRepository.getById(id);
-        if (!result.data) {
-            result.message = "Category not found";
+        if (!id) {
+            return new Result({ message: "Missing fields" });
         }
-        return result;
+        const data = await this.categoryRepository.getById(id);
+        if (!data) {
+            return new Result({ message: "Category not found" });
+        }
+        return new Result({ data: data });
     }
 
     async add(category: Category): Promise<Result> {
-        let anyError = false;
-        let result = new Result();
+        if (!category.name) {
+            return new Result({ message: "Missing fields" });
+        }
         if (category.parent) {
             const children = await this.categoryRepository.getChildren(
                 category.parent
             );
             children.find((child) => {
                 if (child.name === category.name) {
-                    result.message = "Category with this name already exists";
-                    anyError = true;
+                    return new Result({
+                        message: "Category with this name already exists",
+                    });
                 }
             });
         }
-        if (!anyError) {
-            result.data = await this.categoryRepository.save(category);
-        }
-        return result;
+        const data = await this.categoryRepository.save(category);
+        return new Result({ data: data });
     }
 
     async update(category: Category): Promise<Result> {
-        let result = new Result();
+        if (!category.name || !category.id) {
+            return new Result({ message: "Missing fields" });
+        }
         const categoryTemp = await this.categoryRepository.getById(category.id);
         if (!categoryTemp) {
-            result.message = "Category not found";
-        } else {
-            await this.categoryRepository.update(category.id, category);
+            return new Result({ message: "Category not found" });
         }
-        return result;
+        await this.categoryRepository.update(category.id, category);
+        return new Result({});
     }
 
     async delete(id: number): Promise<Result> {
-        let anyError = false;
-        let result = new Result();
+        if (!id) {
+            return new Result({ message: "Missing fields" });
+        }
         const category = await this.categoryRepository.getById(id);
         if (!category) {
-            result.message = "Category not found";
-            anyError = true;
+            return new Result({ message: "Category not found" });
         }
         const children = await this.categoryRepository.getChildren(category);
         if (children.length > 0) {
-            result.message =
-                "There are children categories, you can't delete this category";
-            anyError = true;
+            return new Result({
+                message:
+                    "There are children categories, you can't delete this category",
+            });
         }
         const products = await this.productRepository.getByCategory(category);
         if (products.length > 0) {
-            result.message =
-                "There are products in this category, you can't delete this category";
-            anyError = true;
+            return new Result({
+                message:
+                    "There are products in this category, you can't delete this category",
+            });
         }
-        if (!anyError) {
-            await this.categoryRepository.delete(id);
-        }
-        return result;
+        await this.categoryRepository.delete(id);
+        return new Result({});
     }
 }
