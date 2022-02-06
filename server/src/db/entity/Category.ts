@@ -7,6 +7,7 @@ import {
 } from "typeorm";
 
 export interface ICategory {
+    id?: number;
     name?: string;
     parent?: Category;
 }
