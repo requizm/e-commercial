@@ -1,7 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Product } from "src/db/entity/Product";
-import { ProductRepository } from "src/db/repository/ProductRepository";
-import { Result } from "src/dto/Result";
+import { Product } from "../db/entity/Product";
+import { ProductRepository } from "../db/repository/ProductRepository";
+import { ProductDto } from "../dto/ProductDto";
+import { Result } from "../dto/Result";
 import { getConnection } from "typeorm";
 
 @Injectable()
@@ -30,7 +31,8 @@ export class ProductService {
         return new Result({ data: data });
     }
 
-    async add(product: Product): Promise<Result> {
+    async add(productDto: ProductDto): Promise<Result> {
+        const product = productDto.toProduct() as Product;
         if (
             !product.name ||
             !product.category ||
