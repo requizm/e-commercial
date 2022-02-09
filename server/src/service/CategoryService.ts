@@ -66,6 +66,12 @@ export class CategoryService {
             return new Result({ message: "Category not found" });
         }
 
+        if (category.id == Number(category.parent)) {
+            return new Result({
+                message: "Category can't be parent of itself",
+            });
+        }
+
         let children: Category[] = [];
         if (category.parent) {
             children = await this.categoryRepository.getChildren(

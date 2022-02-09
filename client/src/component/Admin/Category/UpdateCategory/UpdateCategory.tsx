@@ -65,7 +65,7 @@ export function UpdateCategory() {
     async function updateCategoryList() {
         const response = await Get("category/getall");
         const result = await response.json();
-        setCategories(result.data);
+        setCategories(result.data.filter((category: { id: number; }) => category.id !== id));
 
         const category: Category = result.data.find(
             (c: { id: number }) => c.id === id
