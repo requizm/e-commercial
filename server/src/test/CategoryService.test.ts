@@ -155,6 +155,17 @@ describe("Category Service", () => {
         expect(result.message).not.toBe(null);
     });
 
+    it("shouldn't update a category with wrong parent", async () => {
+        const parent = new CategoryDto({ name: "parent" });
+        const parentResult = await categoryService.add(parent);
+        const newParent = parentResult.data;
+        expect(newParent).toBeDefined();
+
+        const updatedParent = { id: newParent.id, parent: newParent.id } as unknown as Category;
+        const result = await categoryService.update(updatedParent);
+        expect(result.message).not.toBe(null);
+    });
+
     it("should delete a category ", async () => {
         const category = new CategoryDto({ name: "category" });
         const categoryResult = await categoryService.add(category);
