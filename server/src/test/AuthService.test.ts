@@ -3,7 +3,7 @@
 import { Connection, Repository } from "typeorm";
 import { CreateMemDb } from "../db/CreateMemoryDb";
 import { AuthService } from "../service/AuthService";
-import { User } from "../DB/entity/User";
+import { User } from "../db/entity/User";
 import { UserDto } from "../dto/UserDto";
 
 describe("Auth Service", () => {
