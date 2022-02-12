@@ -35,7 +35,7 @@ export function ProductList() {
     }, []);
 
     async function deleteProduct(id: number) {
-        const response = await Post("", `category/delete/${id}`);
+        const response = await Post("", `product/delete/${id}`);
         if (response.ok) {
             updateProductList();
             setFormSubmit("");
