@@ -8,10 +8,11 @@ import { AddCategoryPage } from "./page/Admin/Category/AddCategoryPage/AddCatego
 import { CategoryListPage } from "./page/Admin/Category/CategoryListPage/CategoryListPage";
 import { UpdateCategoryPage } from "./page/Admin/Category/UpdateCategoryPage/UpdateCategoryPage";
 import { AddProductPage } from "./page/Admin/Product/AddProductPage/AddProductPage";
-import { ProductListPage } from "./page/Admin/Product/ProductListPage/ProductListPage";
+import { ProductListPage as AdminProductListPage } from "./page/Admin/Product/ProductListPage/ProductListPage";
 import { UpdateProductPage } from "./page/Admin/Product/UpdateProductPage/UpdateProductPage";
 import { LoginPage } from "./page/LoginPage/LoginPage";
 import { RegisterPage } from "./page/RegisterPage/RegisterPage";
+import { ProductListPage } from "./page/ProductListPage/ProductListPage";
 
 export default function App() {
     return (
@@ -19,7 +20,7 @@ export default function App() {
             <Routes>
                 <Route
                     path="/admin/products"
-                    element={<ProductListPage />}
+                    element={<AdminProductListPage />}
                 ></Route>
                 <Route
                     path="/admin/products/add"
@@ -40,6 +41,10 @@ export default function App() {
                 <Route
                     path="/admin/categories/update/:id"
                     element={<UpdateCategoryPage />}
+                ></Route>
+                <Route
+                    path="/products"
+                    element={<ProductListPage />}
                 ></Route>
                 <Route path="/login" element={<LoginPage />}></Route>
                 <Route path="/register" element={<RegisterPage />}></Route>
