@@ -1,6 +1,6 @@
 import "./style/UpdateProduct.scss";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { Get, Put } from "../../../../util/ApiCall";
@@ -27,11 +27,37 @@ export function UpdateProduct() {
     const [formSubmit, setFormSubmit] = useState("");
     const [categories, setCategories] = useState([]);
 
-    useEffect(() => {
-        updateCategoryList();
-    }, []);
+    const updateCategoryList = useCallback(async () => {
+        const categoryResponse = await Get("category/getall");
+        const categoryResult = await categoryResponse.json();
+        setCategories(categoryResult.data);
+
+        const productResponse = await Get(`product/get/${id}`);
+        const productResult = await productResponse.json();
+        setFields((prevState) => ({
+            ...prevState,
+            name: productResult.data.name,
+            description: productResult.data.description,
+            price: productResult.data.price,
+            image: productResult.data.image,
+            category: productResult.data.category.id,
+        }))
+    }, [id]);
 
     useEffect(() => {
+        updateCategoryList();
+    }, [updateCategoryList]);
+
+    useEffect(() => {
+        function validateForm(): boolean {
+            return (
+                isNullOrEmpty(fields.name) ||
+                isNullOrEmpty(fields.description) ||
+                isNullOrEmpty(fields.image) ||
+                fields.price <= 0
+            );
+        }
+
         let object = document.getElementById("update-button");
         if (validateForm()) {
             document
@@ -47,15 +73,6 @@ export function UpdateProduct() {
             object?.classList.add("active-btn");
         }
     }, [fields.image, fields.description, fields.price, fields.name]);
-
-    function validateForm(): boolean {
-        return (
-            isNullOrEmpty(fields.name) ||
-            isNullOrEmpty(fields.description) ||
-            isNullOrEmpty(fields.image) ||
-            fields.price <= 0
-        );
-    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -76,22 +93,7 @@ export function UpdateProduct() {
         }
     }
 
-    async function updateCategoryList() {
-        const categoryResponse = await Get("category/getall");
-        const categoryResult = await categoryResponse.json();
-        setCategories(categoryResult.data);
 
-        const productResponse = await Get(`product/get/${id}`);
-        const productResult = await productResponse.json();
-        setFields((prevState) => ({
-            ...prevState,
-            name: productResult.data.name,
-            description: productResult.data.description,
-            price: productResult.data.price,
-            image: productResult.data.image,
-            category: productResult.data.category.id,
-        }));
-    }
 
     function handleInput(event: FormEvent<HTMLInputElement>) {
         const { name, value } = event.currentTarget;

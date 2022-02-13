@@ -22,6 +22,10 @@ export function AddCategory() {
     }, []);
 
     useEffect(() => {
+        function validateForm(): boolean {
+            return isNullOrEmpty(name);
+        }
+
         let object = document.getElementById("add-button");
         if (validateForm()) {
             document
@@ -35,10 +39,6 @@ export function AddCategory() {
             object?.classList.add("active-btn");
         }
     }, [name]);
-
-    function validateForm(): boolean {
-        return isNullOrEmpty(name);
-    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
