@@ -35,7 +35,9 @@ export class ProductController {
     async add(@Req() request: Request, @Res() res: Response) {
         const product = new ProductDto(JSON.parse(JSON.stringify(request.body)) as ProductDto);
         const result = await this.productService.add(product);
-        res.status(HttpStatus.OK).json(result);
+        res.status(
+            result.message ? HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK
+        ).json(result);
     }
 
     @Put("update")
