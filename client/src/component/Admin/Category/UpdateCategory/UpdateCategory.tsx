@@ -1,6 +1,6 @@
 import "./style/UpdateCategory.scss";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { Get, Put } from "../../../../util/ApiCall";
@@ -20,11 +20,29 @@ export function UpdateCategory() {
     const [formSubmit, setFormSubmit] = useState("");
     const [categories, setCategories] = useState([]);
 
-    useEffect(() => {
-        updateCategoryList();
-    }, []);
+    const updateCategoryList = useCallback(async () => {
+        const response = await Get("category/getall");
+        const result = await response.json();
+        setCategories(result.data.filter((category: { id: number; }) => category.id !== id));
+
+        const category: Category = result.data.find(
+            (c: { id: number }) => c.id === id
+        );
+        setName(category.name);
+        if (category.parent) {
+            setParent(category.parent.id);
+        }
+    }, [id])
 
     useEffect(() => {
+        updateCategoryList();
+    }, [updateCategoryList]);
+
+    useEffect(() => {
+        function validateForm(): boolean {
+            return isNullOrEmpty(name);
+        }
+
         let object = document.getElementById("update-button");
         if (validateForm()) {
             document
@@ -40,10 +58,6 @@ export function UpdateCategory() {
             object?.classList.add("active-btn");
         }
     }, [name]);
-
-    function validateForm(): boolean {
-        return isNullOrEmpty(name);
-    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -62,19 +76,6 @@ export function UpdateCategory() {
         }
     }
 
-    async function updateCategoryList() {
-        const response = await Get("category/getall");
-        const result = await response.json();
-        setCategories(result.data.filter((category: { id: number; }) => category.id !== id));
-
-        const category: Category = result.data.find(
-            (c: { id: number }) => c.id === id
-        );
-        setName(category.name);
-        if (category.parent) {
-            setParent(category.parent.id);
-        }
-    }
 
     return (
         <div className="category-card">

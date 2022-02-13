@@ -28,6 +28,15 @@ export function AddProduct() {
     }, []);
 
     useEffect(() => {
+        function validateForm(): boolean {
+            return (
+                isNullOrEmpty(fields.name) ||
+                isNullOrEmpty(fields.description) ||
+                isNullOrEmpty(fields.image) ||
+                fields.price <= 0
+            );
+        }
+
         let object = document.getElementById("add-button");
         if (validateForm()) {
             document
@@ -47,15 +56,6 @@ export function AddProduct() {
             setFields((prevState) => ({ ...prevState, category: categories[0].id }));
         }
     }, [categories]);
-
-    function validateForm(): boolean {
-        return (
-            isNullOrEmpty(fields.name) ||
-            isNullOrEmpty(fields.description) ||
-            isNullOrEmpty(fields.image) ||
-            fields.price <= 0
-        );
-    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
