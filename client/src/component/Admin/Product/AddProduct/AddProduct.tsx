@@ -21,7 +21,7 @@ const defaultFields = {
 export function AddProduct() {
     const [fields, setFields] = useState(defaultFields);
     const [formSubmit, setFormSubmit] = useState("");
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState([] as Category[]);
 
     useEffect(() => {
         updateCategoryList();
@@ -41,6 +41,12 @@ export function AddProduct() {
             object?.classList.add("active-btn");
         }
     }, [fields.image, fields.description, fields.price, fields.name]);
+
+    useEffect(() => {
+        if (categories) {
+            setFields((prevState) => ({ ...prevState, category: categories[0].id }));
+        }
+    }, [categories]);
 
     function validateForm(): boolean {
         return (
