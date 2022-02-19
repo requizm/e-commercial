@@ -13,6 +13,7 @@ import { UpdateProductPage } from "./page/Admin/Product/UpdateProductPage/Update
 import { LoginPage } from "./page/LoginPage/LoginPage";
 import { RegisterPage } from "./page/RegisterPage/RegisterPage";
 import { ProductListPage } from "./page/ProductListPage/ProductListPage";
+import { ProductDetailPage } from "./page/ProductDetailPage/ProductDetailPage";
 
 export default function App() {
     return (
@@ -45,6 +46,10 @@ export default function App() {
                 <Route
                     path="/products"
                     element={<ProductListPage />}
+                ></Route>
+                <Route
+                    path="/products/:id"
+                    element={<ProductDetailPage />}
                 ></Route>
                 <Route path="/login" element={<LoginPage />}></Route>
                 <Route path="/register" element={<RegisterPage />}></Route>

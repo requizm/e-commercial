@@ -35,15 +35,17 @@ export function ProductList() {
         <div className="items">
             {products.map((product: Product) => {
                 return (
-                    <div className="item" key={product.id}>
-                        <div className="img-block">
-                            <img className="img" src="https://via.placeholder.com/150" alt="product" />
+                    <a href={ String(product.id) }>
+                        <div className="item" key={product.id}>
+                            <div className="img-block">
+                                <img className="img" src="https://via.placeholder.com/150" alt="product" />
+                            </div>
+                            <div className="info-block">
+                                <div className="name">{product.name}</div>
+                                <div className="price">${product.price}</div>
+                            </div>
                         </div>
-                        <div className="info-block">
-                            <div className="name">{product.name}</div>
-                            <div className="price">${product.price}</div>
-                        </div>
-                    </div>);
+                    </a>);
             })}
         </div>
     );
