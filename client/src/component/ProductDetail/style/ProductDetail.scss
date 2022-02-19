@@ -1,0 +1,33 @@
+.item {
+    margin-top: 10px;
+    display: flex;
+    height: 400px;
+    .item-image {
+        display: flex;
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 15px;
+        img {
+            height: 100%;
+            margin: auto;
+        }
+    }
+    .item-info {
+        flex: 0 0 50%;
+        max-width: 50%;
+        .item-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .item-description {
+            margin-bottom: 10px;
+        }
+        .item-price {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #094b27;
+        }
+    }
+}
