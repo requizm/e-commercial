@@ -4,4 +4,8 @@
     .image {
         height: 110px;
     }
+    td {
+        text-overflow: ellipsis;
+        max-width: 40ch;
+    }
 }
