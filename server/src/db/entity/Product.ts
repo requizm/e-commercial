@@ -1,12 +1,6 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Category } from "./Category";
+import { Category } from './Category';
 
 export interface IProduct {
     id?: number;

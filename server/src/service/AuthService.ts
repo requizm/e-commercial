@@ -1,16 +1,19 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { User } from "../db/entity/User";
-import { UserRepository } from "../db/repository/UserRepository";
-import { Result } from "../dto/Result";
-import { UserDto } from "../dto/UserDto";
-import { getConnection } from "typeorm";
+import { getConnectionManager } from 'typeorm';
+
+import { Inject, Injectable, Optional } from '@nestjs/common';
+
+import { User } from '../db/entity/User';
+import { UserRepository } from '../db/repository/UserRepository';
+import { Result } from '../dto/Result';
+import { UserDto } from '../dto/UserDto';
 
 @Injectable()
 export class AuthService {
-    userRepository: UserRepository;
-    constructor(@Inject("connectionName") private connectionName: string) {
-        const connection = getConnection(this.connectionName);
-        this.userRepository = connection.getCustomRepository(UserRepository);
+    constructor(@Optional() @Inject("userRepository") private userRepository: UserRepository) {
+        this.userRepository = userRepository;
+        if (!this.userRepository) {
+            this.userRepository = getConnectionManager().get("default").getCustomRepository(UserRepository);
+        }
     }
 
     async register(userDto: UserDto): Promise<Result> {

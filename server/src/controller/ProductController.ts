@@ -1,17 +1,10 @@
-import {
-    Controller,
-    Get,
-    HttpStatus,
-    Param,
-    Post,
-    Put,
-    Req,
-    Res,
-} from "@nestjs/common";
-import { Request, Response } from "express";
-import { Product } from "../db/entity/Product";
-import { ProductDto } from "../dto/ProductDto";
-import { ProductService } from "../service/ProductService";
+import { Request, Response } from 'express';
+
+import { Controller, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
+
+import { Product } from '../db/entity/Product';
+import { ProductDto } from '../dto/ProductDto';
+import { ProductService } from '../service/ProductService';
 
 @Controller("product")
 export class ProductController {

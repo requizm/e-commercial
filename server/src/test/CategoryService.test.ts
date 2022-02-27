@@ -1,219 +1,182 @@
-import { Connection, Repository } from "typeorm";
-import { CreateMemDb } from "../db/CreateMemoryDb";
-import { CategoryDto } from "../dto/CategoryDto";
-import { Category } from "../db/entity/Category";
-import { CategoryService } from "../service/CategoryService";
-import { ProductService } from "../service/ProductService";
-import { ProductDto } from "../dto/ProductDto";
+import { Connection } from 'typeorm';
+
+import { Test } from '@nestjs/testing';
+
+import { CreateMemDb } from '../db/CreateMemoryDb';
+import { Category } from '../db/entity/Category';
+import { Product } from '../db/entity/Product';
+import { CategoryRepository } from '../db/repository/CategoryRepository';
+import { ProductRepository } from '../db/repository/ProductRepository';
+import { CategoryDto } from '../dto/CategoryDto';
+import { CategoryService } from '../service/CategoryService';
+import { ProductService } from '../service/ProductService';
 
 describe("Category Service", () => {
     let db: Connection;
-    let categoryService: CategoryService;
-    let categoryRepository: Repository<Category>;
 
-    let productService: ProductService;
+    let categoryService: CategoryService;
+    let categoryRepository: CategoryRepository;
+    let productRepository: ProductRepository;
 
     beforeEach(async () => {
         db = await CreateMemDb();
-        categoryRepository = db.getRepository(Category);
-        categoryService = new CategoryService("test");
+        productRepository = db.getCustomRepository(ProductRepository)
+        categoryRepository = db.getCustomRepository(CategoryRepository)
+        const moduleRef = await Test.createTestingModule({
+            providers: [
+                ProductService,
+                {
+                    provide: "productRepository",
+                    useValue: productRepository,
+                },
+                CategoryService,
+                {
+                    provide: "categoryRepository",
+                    useValue: categoryRepository,
+                },
+                {
+                    provide: "productRepository",
+                    useValue: productRepository,
+                },
+            ],
+        }).compile();
 
-        productService = new ProductService("test");
+        categoryService = moduleRef.get<CategoryService>(CategoryService);
     });
     afterEach(() => db.close());
 
     it("should get all categories", async () => {
-        for (let i = 0; i < 10; i++) {
-            const category = new CategoryDto({ name: "category" + i });
-            const categoryResult = await categoryService.add(category);
-            const newCategory = categoryResult.data;
-            expect(newCategory).toBeDefined();
-        }
+        const output = [new Category({ name: "test" }), new Category({ name: "test2" })];
+
+        jest.spyOn(categoryRepository, "getAll").mockResolvedValueOnce(output);
 
         const categories = await categoryService.getAll();
         const catogeriesAsArray = categories.data as Category[];
         expect(categories).toBeDefined();
-        expect(catogeriesAsArray.length).toBe(10);
+        expect(catogeriesAsArray.length).toBe(2);
     });
 
     it("should create a parent and child category ", async () => {
-        const parent = new CategoryDto({ name: "parent" });
-        const parentResult = await categoryService.add(parent);
-        const newParent = parentResult.data;
-        expect(newParent).toBeDefined();
+        const parent = { id: 1, name: "test" } as Category;
+        const input = new CategoryDto({ name: "test2", parent: parent.id } as unknown as CategoryDto);
+        const output = { name: "test2", parent: parent } as Category;
 
-        const newParentInDb = await categoryRepository.findOne(newParent.id);
-        expect(newParentInDb.name).toBe(parent.name);
+        jest.spyOn(categoryRepository, "getChildren").mockResolvedValueOnce([]);
+        jest.spyOn(categoryRepository, "save").mockResolvedValueOnce(output);
 
-
-        const child = new CategoryDto({ name: "child", parent: newParent.id });
-        const childResult = await categoryService.add(child);
-        const newChild = childResult.data;
-        expect(newChild).toBeDefined();
-
-        const newChildInDb = await categoryRepository.findOne({
-            where: { id: newChild.id },
-            relations: ["parent"],
-        });
-        expect(newChildInDb.name).toBe(child.name);
-        expect(newChildInDb.parent.id).toBe(newParent.id);
+        const result = await categoryService.add(input);
+        expect(result.data).toBeDefined();
     });
 
     it("shouldn't create a category with missing input", async () => {
         const category = new CategoryDto({});
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeUndefined();
+
+        const result = await categoryService.add(category);
+        expect(result.data).toBeUndefined();
     });
 
     it("shouldn't create a category with wrong input and null parent ", async () => {
-        const category = new CategoryDto({ name: "category" });
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeDefined();
+        const root = { id: 1, name: "category" } as Category;
+        const input = new CategoryDto({ name: "category" } as unknown as CategoryDto);
+        jest.spyOn(categoryRepository, "getRootChildren").mockResolvedValueOnce([root]);
 
-        const category2 = new CategoryDto({ name: "category" });
-        const category2Result = await categoryService.add(category2);
-        const newCategory2 = category2Result.data;
-        expect(newCategory2).toBeUndefined();
+        const result = await categoryService.add(input);
+        expect(result.data).toBeUndefined();
     });
 
     it("shouldn't create a category with wrong input and parent", async () => {
-        const category = new CategoryDto({ name: "parent" });
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeDefined();
+        const root = { id: 1, name: "category" } as Category;
+        const rootChildren = { id: 2, name: "root_children", parent: root } as Category;
+        const input = new CategoryDto({ name: "root_children", parent: root.id } as unknown as CategoryDto);
 
-        const child1 = new CategoryDto({ name: "child", parent: newCategory.id });
-        const child1Result = await categoryService.add(child1);
-        const newChild1 = child1Result.data;
-        expect(newChild1).toBeDefined();
+        jest.spyOn(categoryRepository, "getChildren").mockResolvedValueOnce([rootChildren]);
 
-        const child2 = new CategoryDto({ name: "child", parent: newCategory.id });
-        const child2Result = await categoryService.add(child2);
-        const newChild2 = child2Result.data;
-        expect(newChild2).toBeUndefined();
+        const result = await categoryService.add(input);
+        expect(result.data).toBeUndefined();
     });
 
     it("should update a category ", async () => {
-        const parent = new CategoryDto({ name: "parent" });
-        const parentResult = await categoryService.add(parent);
-        const newParent = parentResult.data;
-        expect(newParent).toBeDefined();
+        const parent = { id: 1, name: "parent" } as Category;
+        const child = { id: 2, name: "child" } as Category;
+        const updatedChild = { id: child.id, name: "updated", parent: parent.id } as unknown as Category;
 
-        const child = new CategoryDto({ name: "child" });
-        const childResult = await categoryService.add(child);
-        const newChild = childResult.data;
-        expect(newChild).toBeDefined();
+        jest.spyOn(categoryRepository, "getById").mockResolvedValueOnce(child);
+        jest.spyOn(categoryRepository, "getRootChildren").mockResolvedValueOnce([parent]);
+        jest.spyOn(categoryRepository, "update").mockResolvedValueOnce({ raw: { affectedRows: 1 }, generatedMaps: [{ id: 1 }] });
 
-        const updatedChild = { id: newChild.id, name: "updated", parent: newParent.id } as unknown as Category;
-        await categoryService.update(updatedChild);
-
-        const updatedChildInDb = await categoryRepository.findOne({
-            where: { id: updatedChild.id },
-            relations: ["parent"],
-        });
-        expect(updatedChildInDb).toBeDefined();
-        expect(updatedChildInDb.name).toBe(updatedChild.name);
-        expect(updatedChildInDb.parent.id).toBe(updatedChild.parent);
+        const result = await categoryService.update(updatedChild);
+        expect(result.message).toBeUndefined();
     });
 
     it("shouldn't update a category with wrong input", async () => {
-        const parent = new CategoryDto({ name: "parent" });
-        const parentResult = await categoryService.add(parent);
-        const newParent = parentResult.data;
-        expect(newParent).toBeDefined();
+        const root = { id: 1, name: "parent" } as Category;
+        const rootChildren = { id: 2, name: "root_children", parent: root } as Category;
 
-        const child = new CategoryDto({ name: "child" });
-        const childResult = await categoryService.add(child);
-        const newChild = childResult.data;
-        expect(newChild).toBeDefined();
+        const child = { id: 3, name: "child" } as Category;
+        const updatedChild = { id: child.id, name: "root_children", parent: root.id } as unknown as Category;
 
-        const updatedChild = { id: newChild.id, name: "parent" } as unknown as Category;
-        await categoryService.update(updatedChild);
+        jest.spyOn(categoryRepository, "getById").mockResolvedValueOnce(child);
+        jest.spyOn(categoryRepository, "getChildren").mockResolvedValueOnce([rootChildren]);
 
-        const updatedChildInDb = await categoryRepository.findOne({
-            where: { id: updatedChild.id },
-            relations: ["parent"],
-        });
-        expect(updatedChildInDb.name).toBe(child.name);
+        const result = await categoryService.update(updatedChild);
+        expect(result.message).toBeDefined();
     });
 
     it("shouldn't update a category with missing input", async () => {
-        const parent = new CategoryDto({ name: "parent" });
-        const parentResult = await categoryService.add(parent);
-        const newParent = parentResult.data;
-        expect(newParent).toBeDefined();
+        const input = { name: "parent" } as Category;
 
-        const child = new CategoryDto({ name: "child" });
-        const childResult = await categoryService.add(child);
-        const newChild = childResult.data;
-        expect(newChild).toBeDefined();
-
-        const updatedChild = { id: newChild.id } as unknown as Category;
-        const result = await categoryService.update(updatedChild);
-        expect(result.message).not.toBe(null);
+        const result = await categoryService.update(input);
+        expect(result.message).toBeDefined();
     });
 
     it("shouldn't update a category with wrong parent", async () => {
-        const parent = new CategoryDto({ name: "parent" });
-        const parentResult = await categoryService.add(parent);
-        const newParent = parentResult.data;
-        expect(newParent).toBeDefined();
+        const root = { id: 1, name: "parent" } as Category;
+        const updatedParent = { id: root.id, parent: root.id } as unknown as Category;
 
-        const updatedParent = { id: newParent.id, parent: newParent.id } as unknown as Category;
+        jest.spyOn(categoryRepository, "getById").mockResolvedValueOnce(root);
+
         const result = await categoryService.update(updatedParent);
-        expect(result.message).not.toBe(null);
+        expect(result.message).toBeDefined();
     });
 
     it("should delete a category ", async () => {
-        const category = new CategoryDto({ name: "category" });
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeDefined();
+        const input = { id: 1, name: "test" } as Category;
 
-        await categoryService.delete(newCategory.id);
+        jest.spyOn(categoryRepository, "getById").mockResolvedValueOnce(input);
+        jest.spyOn(categoryRepository, "getChildren").mockResolvedValueOnce([]);
+        jest.spyOn(productRepository, "getByCategory").mockResolvedValueOnce([]);
+        jest.spyOn(categoryRepository, "delete").mockResolvedValueOnce({ raw: { affectedRows: 1 } });
 
-        const categoryInDb = await categoryRepository.findOne(newCategory.id);
-        expect(categoryInDb).toBeUndefined();
+        const result = await categoryService.delete(input.id);
+        expect(result.message).toBeUndefined();
     });
 
     it("shouldn't delete a category with have child", async () => {
-        const category = new CategoryDto({ name: "parent" });
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeDefined();
+        const parent = { id: 1, name: "parent" } as Category;
+        const child = { id: 2, name: "child", parent: parent } as Category;
 
-        const child1 = new CategoryDto({ name: "child", parent: newCategory.id });
-        const child1Result = await categoryService.add(child1);
-        const newChild1 = child1Result.data;
-        expect(newChild1).toBeDefined();
+        jest.spyOn(categoryRepository, "getById").mockResolvedValueOnce(parent);
+        jest.spyOn(categoryRepository, "getChildren").mockResolvedValueOnce([child]);
 
-        await categoryService.delete(newCategory.id);
-        const categoryInDb = await categoryRepository.findOne(newCategory.id);
-        expect(categoryInDb).toBeDefined();
+        const result = await categoryService.delete(parent.id);
+        expect(result.message).toBeDefined();
     });
 
     it("shouldn't delete a category with have product", async () => {
-        const category = new CategoryDto({ name: "parent" });
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeDefined();
+        const parent = { id: 1, name: "parent" } as Category;
+        const product = { id: 2, name: "product", category: parent } as Product;
 
-        const product = new ProductDto({ name: "product", description: "description", price: 1, category: newCategory.id, image: "image" });
-        const productResult = await productService.add(product);
-        const newProduct = productResult.data;
-        expect(newProduct).toBeDefined();
+        jest.spyOn(categoryRepository, "getById").mockResolvedValueOnce(parent);
+        jest.spyOn(productRepository, "getByCategory").mockResolvedValueOnce([product]);
 
-        await categoryService.delete(newCategory.id);
-        const categoryInDb = await categoryRepository.findOne(newCategory.id);
-        expect(categoryInDb).toBeDefined();
+        const result = await categoryService.delete(parent.id);
+        expect(result.message).toBeDefined();
     });
 
     it("shouldn't delete a category with missing input", async () => {
         const category = { name: "category" } as unknown as Category;
 
         const result = await categoryService.delete(category.id);
-        expect(result.message).not.toBe(null);
+        expect(result.message).toBeDefined();
     });
 });

@@ -1,111 +1,106 @@
-import { Connection, Repository } from "typeorm";
-import { CreateMemDb } from "../db/CreateMemoryDb";
-import { CategoryDto } from "../dto/CategoryDto";
-import { Category } from "../db/entity/Category";
-import { CategoryService } from "../service/CategoryService";
-import { ProductService } from "../service/ProductService";
-import { ProductDto } from "../dto/ProductDto";
-import { Product } from "../db/entity/Product";
+import { Connection } from 'typeorm';
+
+import { Test } from '@nestjs/testing';
+
+import { CreateMemDb } from '../db/CreateMemoryDb';
+import { Category } from '../db/entity/Category';
+import { Product } from '../db/entity/Product';
+import { ProductRepository } from '../db/repository/ProductRepository';
+import { ProductDto } from '../dto/ProductDto';
+import { ProductService } from '../service/ProductService';
 
 describe("Product Service", () => {
     let db: Connection;
-    let categoryService: CategoryService;
-
     let productService: ProductService;
-    let productRepository: Repository<Product>;
+    let productRepository: ProductRepository;
 
     beforeEach(async () => {
         db = await CreateMemDb();
-        categoryService = new CategoryService("test");
+        productRepository = db.getCustomRepository(ProductRepository)
+        const moduleRef = await Test.createTestingModule({
+            providers: [
+                ProductService,
+                {
+                    provide: "productRepository",
+                    useValue: productRepository,
+                },
+            ],
+        }).compile();
 
-        productRepository = db.getRepository(Product);
-        productService = new ProductService("test");
+        productService = moduleRef.get<ProductService>(ProductService);
     });
     afterEach(() => db.close());
 
     it("should get all products", async () => {
-        for (let i = 0; i < 8; i++) {
-            const category = new CategoryDto({ name: "parent" + i });
-            const categoryResult = await categoryService.add(category);
-            const newCategory = categoryResult.data;
-            expect(newCategory).toBeDefined();
+        const output = [new Product({ name: "test", description: "test", price: 1, image: "test", category: new Category({ name: "test" }) }), new Product({ name: "test2", description: "test2", price: 2, image: "test2", category: new Category({ name: "test2" }) })];
 
-            const product = new ProductDto({ name: "product" + i, description: "description", price: 1, category: newCategory.id, image: "image" });
-            const productResult = await productService.add(product);
-            const newProduct = productResult.data;
-            expect(newProduct).toBeDefined();
-        }
+        jest.spyOn(productRepository, "getAll").mockResolvedValueOnce(output);
 
-        const products = await categoryService.getAll();
-        const productsAsArray = products.data as Category[];
+        const products = await productService.getAll();
+        const productsAsArray = products.data as Product[];
         expect(products).toBeDefined();
-        expect(productsAsArray.length).toBe(8);
+        expect(productsAsArray.length).toBe(2);
     });
 
     it("should create a product", async () => {
-        const category = new CategoryDto({ name: "parent" });
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeDefined();
+        const input = new ProductDto({ name: "test", description: "test", price: 1, image: "test", category: { name: "test" } } as ProductDto);
+        const output = { name: "test", description: "test", price: 1, image: "test", category: { name: "test" } } as Product;
 
-        const product = new ProductDto({ name: "product", description: "description", price: 1, category: newCategory.id, image: "image" });
-        const productResult = await productService.add(product);
-        const newProduct = productResult.data;
-        expect(newProduct).toBeDefined();
+        jest.spyOn(productRepository, "save").mockResolvedValueOnce(output);
+        const result = await productService.add(input);
+        expect(result.data).toBeDefined();
     });
 
     it("shouldn't create a product with missing input", async () => {
-        const product = new ProductDto({ });
-        const productResult = await productService.add(product);
-        const newProduct = productResult.data;
-        expect(newProduct).toBeUndefined();
+        const input = new ProductDto({ description: "test", price: 1, image: "test", category: { name: "test" } } as ProductDto);
+
+        const result = await productService.add(input);
+        expect(result.data).toBeUndefined();
     });
 
 
     it("should update a product", async () => {
-        const category = new CategoryDto({ name: "parent" });
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeDefined();
+        const input = { id: 1, name: "test", description: "test", price: 1, image: "test", category: { name: "test" } } as Product;
 
-        const product = new ProductDto({ name: "product", description: "description", price: 1, category: newCategory.id, image: "image" });
-        const productResult = await productService.add(product);
-        const newProduct = productResult.data;
-        expect(newProduct).toBeDefined();
+        jest.spyOn(productRepository, "update").mockResolvedValueOnce({ raw: { affectedRows: 1 }, generatedMaps: [{ id: 1 }] });
+        jest.spyOn(productRepository, "getById").mockResolvedValueOnce(input);
 
-        const updatedProduct = { id: newProduct.id, name: "updatedProduct", description: "descriptionUpdate", price: 2, category: newCategory.id, image: "imageUpdate" } as Product;
-        await productService.update(updatedProduct);
-        const updatedProductInDb = await productRepository.findOne(updatedProduct.id);
-        expect(updatedProductInDb).toBeDefined();
-        expect(updatedProductInDb.name).toBe(updatedProduct.name);
+        const result = await productService.update(input);
+        expect(result.message).toBeUndefined();
     });
 
     it("shouldn't update a product with wrong input", async () => {
-        const updatedProduct = { id: 3, name: "updatedProduct", description: "descriptionUpdate", price: 2, category: 5, image: "imageUpdate" } as unknown as Product;
-        const result = await productService.update(updatedProduct);
-        expect(result.message).not.toBe(null);
+        const input = { id: 1, name: "test", description: "test", price: 1, image: "test", category: { name: "test" } } as Product;
+
+        jest.spyOn(productRepository, "getById").mockResolvedValueOnce(null);
+
+        const result = await productService.update(input);
+        expect(result.message).toBeDefined();
     });
 
     it("should delete a product", async () => {
-        const category = new CategoryDto({ name: "parent" });
-        const categoryResult = await categoryService.add(category);
-        const newCategory = categoryResult.data;
-        expect(newCategory).toBeDefined();
+        const input = { id: 1, name: "test", description: "test", price: 1, image: "test", category: { name: "test" } } as Product;
 
-        const product = new ProductDto({ name: "product", description: "description", price: 1, category: newCategory.id, image: "image" });
-        const productResult = await productService.add(product);
-        const newProduct = productResult.data;
-        expect(newProduct).toBeDefined();
+        jest.spyOn(productRepository, "getById").mockResolvedValueOnce(input);
+        jest.spyOn(productRepository, "delete").mockResolvedValueOnce({ raw: { affectedRows: 1 } });
 
-        await productService.delete(newProduct.id);
-        const productInDb = await productRepository.findOne(newProduct.id);
-        expect(productInDb).toBeUndefined();
+        const result = await productService.delete(input.id);
+        expect(result.message).toBeUndefined();
     });
 
     it("shouldn't delete a product with missing input", async () => {
-        const product = { name: "product" } as unknown as Category;
+        const input = { name: "product" } as unknown as Product;
 
-        const result = await categoryService.delete(product.id);
-        expect(result.message).not.toBe(null);
+        const result = await productService.delete(input.id);
+        expect(result.data).toBeUndefined();
+    });
+
+    it("shouldn't delete a product with wrong input", async () => {
+        const input = { id: 1, name: "test", description: "test", price: 1, image: "test", category: { name: "test" } } as Product;
+
+        jest.spyOn(productRepository, "getById").mockResolvedValueOnce(null);
+
+        const result = await productService.delete(input.id);
+        expect(result.message).toBeDefined();
     });
 });

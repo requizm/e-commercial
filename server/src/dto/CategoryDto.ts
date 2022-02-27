@@ -1,11 +1,11 @@
 export interface ICategoryDto {
     name?: string;
-    parent?: number;
+    parent?: ICategoryDto;
 }
 
 export class CategoryDto {
     name: string;
-    parent: number;
+    parent: ICategoryDto;
 
     constructor(category?: ICategoryDto) {
         this.name = category?.name;
