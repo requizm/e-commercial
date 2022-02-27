@@ -1,9 +1,11 @@
+import { ICategory } from '../db/entity/Category';
+
 export interface IProductDto {
     name?: string;
     description?: string;
     price?: number;
     image?: string;
-    category?: number;
+    category?: ICategory;
 }
 
 export class ProductDto {
@@ -11,7 +13,7 @@ export class ProductDto {
     description: string;
     price: number;
     image: string;
-    category: number;
+    category: ICategory;
 
     constructor(product?: IProductDto) {
         this.name = product?.name;

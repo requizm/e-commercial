@@ -1,8 +1,8 @@
-import { Connection, createConnection } from "typeorm";
+import { Connection, createConnection } from 'typeorm';
 
-import { Category } from "./entity/Category";
-import { Product } from "./entity/Product";
-import { User } from "./entity/User";
+import { Category } from './entity/Category';
+import { Product } from './entity/Product';
+import { User } from './entity/User';
 
 export async function initializeConnection(): Promise<Connection> {
     return createConnection({

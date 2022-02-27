@@ -1,13 +1,18 @@
-import { Module } from "@nestjs/common";
+import { getConnectionManager } from 'typeorm/globals';
 
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
-import { AuthController } from "./controller/AuthController";
-import { CategoryController } from "./controller/CategoryController";
-import { ProductController } from "./controller/ProductController";
-import { AuthService } from "./service/AuthService";
-import { CategoryService } from "./service/CategoryService";
-import { ProductService } from "./service/ProductService";
+import { Module } from '@nestjs/common';
+
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthController } from './controller/AuthController';
+import { CategoryController } from './controller/CategoryController';
+import { ProductController } from './controller/ProductController';
+import { CategoryRepository } from './db/repository/CategoryRepository';
+import { ProductRepository } from './db/repository/ProductRepository';
+import { UserRepository } from './db/repository/UserRepository';
+import { AuthService } from './service/AuthService';
+import { CategoryService } from './service/CategoryService';
+import { ProductService } from './service/ProductService';
 
 @Module({
     imports: [],
@@ -20,20 +25,8 @@ import { ProductService } from "./service/ProductService";
     providers: [
         AppService,
         AuthService,
-        {
-            provide: "connectionName",
-            useValue: "default",
-        },
         CategoryService,
-        {
-            provide: "connectionName",
-            useValue: "default",
-        },
         ProductService,
-        {
-            provide: "connectionName",
-            useValue: "default",
-        },
     ],
 })
 export class AppModule {}

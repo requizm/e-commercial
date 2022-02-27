@@ -1,18 +1,19 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { Product } from "../db/entity/Product";
-import { ProductRepository } from "../db/repository/ProductRepository";
-import { ProductDto } from "../dto/ProductDto";
-import { Result } from "../dto/Result";
-import { getConnection } from "typeorm";
+import { getConnectionManager } from 'typeorm';
+
+import { Inject, Injectable, Optional } from '@nestjs/common';
+
+import { Product } from '../db/entity/Product';
+import { ProductRepository } from '../db/repository/ProductRepository';
+import { ProductDto } from '../dto/ProductDto';
+import { Result } from '../dto/Result';
 
 @Injectable()
 export class ProductService {
-    productRepository: ProductRepository;
-    constructor(@Inject("connectionName") private connectionName: string) {
-        const connection = getConnection(this.connectionName);
-        this.productRepository = connection.getCustomRepository(
-            ProductRepository
-        );
+    constructor(@Optional() @Inject("productRepository") private productRepository: ProductRepository) {
+        this.productRepository = productRepository;
+        if (!this.productRepository) {
+            this.productRepository = getConnectionManager().get("default").getCustomRepository(ProductRepository);
+        }
     }
 
     async getAll(): Promise<Result> {

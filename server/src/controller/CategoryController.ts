@@ -1,17 +1,10 @@
-import {
-    Controller,
-    Get,
-    HttpStatus,
-    Param,
-    Post,
-    Put,
-    Req,
-    Res,
-} from "@nestjs/common";
-import { Request, Response } from "express";
-import { Category } from "../db/entity/Category";
-import { CategoryDto } from "../dto/CategoryDto";
-import { CategoryService } from "../service/CategoryService";
+import { Request, Response } from 'express';
+
+import { Controller, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
+
+import { Category } from '../db/entity/Category';
+import { CategoryDto } from '../dto/CategoryDto';
+import { CategoryService } from '../service/CategoryService';
 
 @Controller("category")
 export class CategoryController {

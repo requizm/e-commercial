@@ -1,23 +1,24 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { Category } from "../db/entity/Category";
-import { CategoryRepository } from "../db/repository/CategoryRepository";
-import { ProductRepository } from "../db/repository/ProductRepository";
-import { CategoryDto } from "../dto/CategoryDto";
-import { Result } from "../dto/Result";
-import { getConnection } from "typeorm";
+import { getConnectionManager } from 'typeorm';
+
+import { Inject, Injectable, Optional } from '@nestjs/common';
+
+import { Category } from '../db/entity/Category';
+import { CategoryRepository } from '../db/repository/CategoryRepository';
+import { ProductRepository } from '../db/repository/ProductRepository';
+import { CategoryDto } from '../dto/CategoryDto';
+import { Result } from '../dto/Result';
 
 @Injectable()
 export class CategoryService {
-    categoryRepository: CategoryRepository;
-    productRepository: ProductRepository;
-    constructor(@Inject("connectionName") private connectionName: string) {
-        const connection = getConnection(this.connectionName);
-        this.categoryRepository = connection.getCustomRepository(
-            CategoryRepository
-        );
-        this.productRepository = connection.getCustomRepository(
-            ProductRepository
-        );
+    constructor(@Optional() @Inject("productRepository") private productRepository: ProductRepository, @Optional() @Inject("categoryRepository") private categoryRepository: CategoryRepository) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        if (!this.productRepository) {
+            this.productRepository = getConnectionManager().get("default").getCustomRepository(ProductRepository);
+        }
+        if (!this.categoryRepository) {
+            this.categoryRepository = getConnectionManager().get("default").getCustomRepository(CategoryRepository);
+        }
     }
 
     async getAll(): Promise<Result> {
